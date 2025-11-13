@@ -17,25 +17,29 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
-  const handleGenerate = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    setLeads([]);
-    setStrategies([]);
-    try {
-      const result = await generateLeadsAndStrategies();
-      if (result && result.leads && result.strategies) {
-        setLeads(result.leads);
-        setStrategies(result.strategies);
-      } else {
-        setError('Received an invalid or empty response from the AI. Please try again.');
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred.');
-    } finally {
-      setIsLoading(false);
+ const handleGenerate = useCallback(async () => {
+  setIsLoading(true);
+  setError(null);
+  setLeads([]);
+  setStrategies([]);
+
+  const prompt = "Find high-quality Dubai business leads and outreach strategies.";
+
+  try {
+    const result = await generateLeadsAndStrategies(prompt);
+
+    if (result && result.leads && result.strategies) {
+      setLeads(result.leads);
+      setStrategies(result.strategies);
+    } else {
+      setError("Received an invalid or empty response from the AI. Please try again.");
     }
-  }, []);
+  } catch (err) {
+    setError(err instanceof Error ? err.message : "An unknown error occurred.");
+  } finally {
+    setIsLoading(false);
+  }
+}, []);
 
   const handleCopyToClipboard = useCallback(() => {
     if (leads.length === 0) return;
